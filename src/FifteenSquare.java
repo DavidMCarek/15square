@@ -1,11 +1,8 @@
-
-//EECS 1510
 //David Carek
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-
 import javax.swing.*;
 
 public class FifteenSquare extends JFrame 
@@ -32,26 +29,66 @@ public class FifteenSquare extends JFrame
 	
 	
 	// These are some of the values that will be used throughout the program.
-	public final int TOTAL_ROWS = 4; // Number of rows on the board.
-	public final int TOTAL_COLUMNS = 4; // Number of columns on the board.
-	public final int BUTTON_SIDE = 70; // Size of the square button side.
-	public final int SPACE = 1; // Size of the space between buttons.
-	public final int FRAME_MARGIN = 5; // Size of the gap between board and the frame.
-	public final int BOARD_SIDE = (3 * SPACE) + (4 * BUTTON_SIDE); // Size of the game board.
-	public final int OPTIONS_BUTTON_HEIGHT = 40; // Height of the options buttons.
-	public final int MOVE_LABEL_HEIGHT = 10; // Height of the move label.
-	public final int OPTIONS_PANEL_HEIGHT = 2 * OPTIONS_BUTTON_HEIGHT + 3 * SPACE + MOVE_LABEL_HEIGHT; // Total height of the options panel.
-	public final int OPTIONS_BUTTON_WIDTH = 93; // Width of each of the option buttons.
-	public int[] invisibleLocation = new int[2]; // The 0 position is the row and 1 is the column location of the 0 square.
-	public boolean isWinner; // This lets the program know when the user has won.
-	public int numberOfMoves = 0; // Counts the number of moves the player makes.
-	public JLabel moveCount; // The GUI component that displays the number of moves.
-	public JLabel gameCount; // Total number of games played label.
-	public JButton[] jbtOptions = new JButton[6]; // The array of options buttons.
-	public JButton[][] jbtBoardSquares = new JButton[TOTAL_ROWS][TOTAL_COLUMNS]; // 4x4 array of buttons that represent the tiles. 
-	public int totalGames = 0; // Total number of games played.
-	public int[] clickLocation = new int[2]; // This is like invisible location except that it is the location of the click.
+	public final int TOTAL_BOARD_ROWS = 4; 
+	
+	public final int TOTAL_BOARD_COLUMNS = 4; 
+	
+	public final int SQUARE_BUTTON_SIDE_LENGTH = 70; 
+	
+	public final int SPACE_BETWEEN_BUTTONS = 1; 
+	
+	public final int FRAME_MARGIN = 5; 
+
+	public final int GAME_BOARD_SIDE_LENGTH = (3 * SPACE_BETWEEN_BUTTONS) + (4 * SQUARE_BUTTON_SIDE_LENGTH);
+	
+	public final int OPTIONS_BUTTON_HEIGHT = 40; 
+	
+	public final int MOVE_COUNTER_LABEL_HEIGHT = 10; 
+	
+	public final int OPTIONS_PANEL_HEIGHT = (2 * OPTIONS_BUTTON_HEIGHT) + SPACE_BETWEEN_BUTTONS + MOVE_COUNTER_LABEL_HEIGHT + (2*FRAME_MARGIN);
+	
+	public final int OPTIONS_BUTTON_WIDTH = 97; 
+	
+	public int[] invisibleButtonLocation = new int[2]; 
+	
+	public final int INVISIBLE_ROW = 0;
+	
+	public final int INVISIBLE_COLUMN = 1;
+	
+	public boolean isWinner; 
+	
+	public int numberOfMovesCounter = 0; 
+	
+	public JLabel moveCountLabel; 
+	
+	public JLabel gameCountLabel; 
+	
+	public JButton[] jbtOptionsButtonsArray = new JButton[6]; 
+	
+	public JButton[][] jbtBoardButtonTilesArray = new JButton[TOTAL_BOARD_ROWS][TOTAL_BOARD_COLUMNS];
+	
+	public int totalGames = 0; 
+	
+	public int[] clickLocation = new int[2]; 
+	
+	public final int CLICKED_ROW = 0;
+	
+	public final int CLICKED_COLUMN = 1;
+	
+	public final int SAVE_BUTTON_NUMBER = 0;
+	
+	public final int LOAD_BUTTON_NUMBER = 1;
+	
+	public final int HELP_BUTTON_NUMBER = 2;
+	
+	public final int HINTS_BUTTON_NUMBER = 3;
+	
+	public final int EXIT_BUTTON_NUMBER = 4;
+	
+	public final int NEW_GAME_BUTTON_NUMBER = 5;
+	
 	public DataOutputStream outGamesPlayed; // Used to write the total games save.
+	
 	public DataInputStream inGamesPlayed; // Used to load the total games save.
 	
 	FifteenSquare()
@@ -65,135 +102,154 @@ public class FifteenSquare extends JFrame
 		} catch (Exception totalGamesException)
 		{
 		}
-				JPanel squarePanel = new JPanel(); // Panel for the square tiles
-				squarePanel.setLayout(null); // Makes the panel have no set layout.
-				squarePanel.setBounds(FRAME_MARGIN, FRAME_MARGIN, BOARD_SIDE + 10, BOARD_SIDE + 10); // Adjusts size and position of the panel.
-				squarePanel.setBackground(Color.BLACK);
-				squarePanel.setBorder(BorderFactory.createLineBorder(Color.black));
+				JPanel mainGameTilesPanel = new JPanel(); 
+				mainGameTilesPanel.setLayout(null); 
+				mainGameTilesPanel.setBounds(FRAME_MARGIN, FRAME_MARGIN, GAME_BOARD_SIDE_LENGTH + (2 * FRAME_MARGIN),
+									         GAME_BOARD_SIDE_LENGTH + (2 * FRAME_MARGIN));
+				mainGameTilesPanel.setBackground(Color.black);
+				mainGameTilesPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 				
-				// The array of buttons needs to have the numbers 0-15 on them. To do that the rows and 
-				// columns must be incremented. Then the buttons need to be added to the panel.
-				for (int boardRows = 0; boardRows < TOTAL_ROWS; boardRows++)
+				int buttonTextAlgorithm;
+				
+				for (int currentBoardRow = 0; currentBoardRow < TOTAL_BOARD_ROWS; currentBoardRow++)
 				{
-					for (int boardColumns = 0; boardColumns < TOTAL_COLUMNS; boardColumns++)
+					for (int currentBoardColumn = 0; currentBoardColumn < TOTAL_BOARD_COLUMNS; currentBoardColumn++)
 					{
-						// Each button is created and the text is set to 1-16
-						jbtBoardSquares[boardRows][boardColumns] = new JButton(((boardRows * 4) + boardColumns + 1) + "");
+						buttonTextAlgorithm = ((currentBoardRow * 4) + currentBoardColumn + 1);
 						
-						// The created squares are not formatted correctly because when a double digit occurs the
-						// squares become wider and the buttons are overlapping. To fix this the set bounds function 
-						// will be used on the squares to adjust the size and location.
-						jbtBoardSquares[boardRows][boardColumns].setBounds
+						jbtBoardButtonTilesArray[currentBoardRow][currentBoardColumn] = new JButton();
+						
+						jbtBoardButtonTilesArray[currentBoardRow][currentBoardColumn].setText(buttonTextAlgorithm + "");
+						
+						jbtBoardButtonTilesArray[currentBoardRow][currentBoardColumn].setBounds
 						(
-							(boardColumns * BUTTON_SIDE) + (SPACE * boardColumns) + FRAME_MARGIN, 	// X position of the button.
-							(boardRows * BUTTON_SIDE) + (SPACE * boardRows) + FRAME_MARGIN, 		// Y position of the button.
-							BUTTON_SIDE, BUTTON_SIDE												// Width and height of the button.
+			/*X Position*/	(currentBoardColumn * SQUARE_BUTTON_SIDE_LENGTH) + (SPACE_BETWEEN_BUTTONS * currentBoardColumn) + FRAME_MARGIN, 
+			/*Y Position*/	(currentBoardRow * SQUARE_BUTTON_SIDE_LENGTH) + (SPACE_BETWEEN_BUTTONS * currentBoardRow) + FRAME_MARGIN, 		
+			/*Width*/		(SQUARE_BUTTON_SIDE_LENGTH),
+			/*Height*/		(SQUARE_BUTTON_SIDE_LENGTH)												
 						);
 						
-						// Action listeners need to be added to the buttons now to detect clicks.
-						jbtBoardSquares[boardRows][boardColumns].addActionListener(new moveListener());
+						jbtBoardButtonTilesArray[currentBoardRow][currentBoardColumn].addActionListener(new moveListener());
 						
-						// The buttons have a dotted line around the text. This next piece of code gets rid of this line.
-						jbtBoardSquares[boardRows][boardColumns].setFocusable(false);
+						jbtBoardButtonTilesArray[currentBoardRow][currentBoardColumn].setFocusable(false);
 						
-						// This makes the buttons and fonts of the buttons look nice.
-						jbtBoardSquares[boardRows][boardColumns].setFont(new Font("arialblack", Font.BOLD, 25));
-						jbtBoardSquares[boardRows][boardColumns].setBorder(BorderFactory.createRaisedBevelBorder());
+						jbtBoardButtonTilesArray[currentBoardRow][currentBoardColumn].setFont(new Font("arialblack", Font.BOLD, 25));
 						
-						// Next the buttons are added to the board panel.
-						squarePanel.add(jbtBoardSquares[boardRows][boardColumns]);		
+						jbtBoardButtonTilesArray[currentBoardRow][currentBoardColumn].setBorder(BorderFactory.createRaisedBevelBorder());
+						
+						mainGameTilesPanel.add(jbtBoardButtonTilesArray[currentBoardRow][currentBoardColumn]);		
 					}
 				}
-				// Now the 16 square will be set to 0.
-				jbtBoardSquares[3][3].setText("0");
+				
+				int invisibleButtonStartingRow = 3;
+				int invisibleButtonStartingColumn = 3;
+				jbtBoardButtonTilesArray[invisibleButtonStartingRow][invisibleButtonStartingColumn].setText("0");
 				
 				// This creates the options panel buttons and disables the ones that are not yet implemented. Then 
 				// the dotted line is disabled.
-				jbtOptions[0] = new JButton("Save");
-				jbtOptions[0].setFocusable(false);
-				jbtOptions[1] = new JButton("Load");
-				jbtOptions[1].setFocusable(false);
-				jbtOptions[2] = new JButton("Help");
-				jbtOptions[2].setFocusable(false);
-				jbtOptions[3] = new JButton("Hints");
-				jbtOptions[3].setEnabled(false);
-				jbtOptions[3].setFocusable(false);
-				jbtOptions[4] = new JButton("Exit");
-				jbtOptions[4].setFocusable(false);
-				jbtOptions[5] = new JButton("New");
-				jbtOptions[5].setFocusable(false);
+				jbtOptionsButtonsArray[SAVE_BUTTON_NUMBER] = new JButton("Save");
+				jbtOptionsButtonsArray[SAVE_BUTTON_NUMBER].setFocusable(false);
 				
-				// The size and position of the options buttons are formatted in the loop.
-				for (int i = 0; i < 6; i++)
+				jbtOptionsButtonsArray[LOAD_BUTTON_NUMBER] = new JButton("Load");
+				jbtOptionsButtonsArray[LOAD_BUTTON_NUMBER].setFocusable(false);
+				
+				jbtOptionsButtonsArray[HELP_BUTTON_NUMBER] = new JButton("Help");
+				jbtOptionsButtonsArray[HELP_BUTTON_NUMBER].setFocusable(false);
+				
+				jbtOptionsButtonsArray[HINTS_BUTTON_NUMBER] = new JButton("Hints");
+				jbtOptionsButtonsArray[HINTS_BUTTON_NUMBER].setEnabled(false);
+				jbtOptionsButtonsArray[HINTS_BUTTON_NUMBER].setFocusable(false);
+				
+				jbtOptionsButtonsArray[EXIT_BUTTON_NUMBER] = new JButton("Exit");
+				jbtOptionsButtonsArray[EXIT_BUTTON_NUMBER].setFocusable(false);
+				
+				jbtOptionsButtonsArray[NEW_GAME_BUTTON_NUMBER] = new JButton("New");
+				jbtOptionsButtonsArray[NEW_GAME_BUTTON_NUMBER].setFocusable(false);
+				
+				// The options buttons are formatted in the loop and action listeners are added.
+				for (int currentOptionsButton = 0; currentOptionsButton < 6; currentOptionsButton++)
 				{
-					if (i < 3)
+					if (currentOptionsButton < 3) // Top row
 					{
-						jbtOptions[i].setBounds
+						jbtOptionsButtonsArray[currentOptionsButton].setBounds
 						(
-							(i * OPTIONS_BUTTON_WIDTH) + (i * SPACE) + FRAME_MARGIN + 7,				// X position of the button.
-							BOARD_SIDE + FRAME_MARGIN + SPACE + 20,										// Y position of the button.
-							OPTIONS_BUTTON_WIDTH, OPTIONS_BUTTON_HEIGHT 							// Width and height of the button.
+			/*X Position*/		(currentOptionsButton * OPTIONS_BUTTON_WIDTH) + (currentOptionsButton * SPACE_BETWEEN_BUTTONS) + FRAME_MARGIN,				
+			/*Y Position*/		(GAME_BOARD_SIDE_LENGTH + (4 * FRAME_MARGIN) + SPACE_BETWEEN_BUTTONS),										
+			/*Width*/			(OPTIONS_BUTTON_WIDTH), 
+			/*Height*/			(OPTIONS_BUTTON_HEIGHT) 							
 						);
-						jbtOptions[i].setBorder(BorderFactory.createRaisedBevelBorder());
-						jbtOptions[i].setFont(new Font("arialblack", Font.BOLD, 18));
 					}
 					
-					else if (i >= 3)
+					else if (currentOptionsButton >= 3) // Bottom row
 					{
-						jbtOptions[i].setBounds
+						jbtOptionsButtonsArray[currentOptionsButton].setBounds
 						(
-							((i - 3) * OPTIONS_BUTTON_WIDTH) + ((i - 3) * SPACE) + FRAME_MARGIN + 7,    // X position of the button.
-							BOARD_SIDE + FRAME_MARGIN + OPTIONS_BUTTON_HEIGHT + 28,						// Y position of the button.
-							OPTIONS_BUTTON_WIDTH, OPTIONS_BUTTON_HEIGHT								// Width and height of the button.
+			/*X Position*/		((currentOptionsButton - 3) * OPTIONS_BUTTON_WIDTH) + ((currentOptionsButton - 3) * SPACE_BETWEEN_BUTTONS) + FRAME_MARGIN,  
+			/*Y Position*/		(GAME_BOARD_SIDE_LENGTH + (5 * FRAME_MARGIN) + OPTIONS_BUTTON_HEIGHT),						
+			/*Width*/			(OPTIONS_BUTTON_WIDTH),
+			/*Height*/			(OPTIONS_BUTTON_HEIGHT)								
 						);
-						jbtOptions[i].setBorder(BorderFactory.createRaisedBevelBorder());
-						jbtOptions[i].setFont(new Font("arialblack", Font.BOLD, 18));
 					}
+					
+					jbtOptionsButtonsArray[currentOptionsButton].setBorder(BorderFactory.createRaisedBevelBorder());
+					jbtOptionsButtonsArray[currentOptionsButton].setFont(new Font("arialblack", Font.BOLD, 18));
+					jbtOptionsButtonsArray[currentOptionsButton].addActionListener(new optionsListener());
+					
 				}
 				
-				// Finally the listener for clicks is added to the option buttons.
-				for(int i = 0; i < 6; i++)
-				{
-					jbtOptions[i].addActionListener(new optionsListener());
-				}
+				gameCountLabel = new JLabel("Games : " + totalGames);
+				gameCountLabel.setFont(new Font("arialblack", Font.BOLD, 12));
 				
-				// There also needs to be a label for the games played and number of turns.
-				gameCount = new JLabel("Games : " + totalGames);
-				gameCount.setFont(new Font("arialblack", Font.BOLD, 12));
-				moveCount = new JLabel("Moves : " + numberOfMoves);
-				moveCount.setFont(new Font("arialblack", Font.BOLD, 12));
+				moveCountLabel = new JLabel("Moves : " + numberOfMovesCounter);
+				moveCountLabel.setFont(new Font("arialblack", Font.BOLD, 12));
+			
+				gameCountLabel.setBounds(
+						/*X Position*/	(FRAME_MARGIN + (2 * OPTIONS_BUTTON_WIDTH) + SPACE_BETWEEN_BUTTONS), 
+						/*Y Position*/	(GAME_BOARD_SIDE_LENGTH + OPTIONS_PANEL_HEIGHT + FRAME_MARGIN),
+						/*Width*/		(GAME_BOARD_SIDE_LENGTH / 2),
+						/*Height*/		(MOVE_COUNTER_LABEL_HEIGHT)
+										);
 				
-				// The labels needs to be formatted.
-				gameCount.setBounds(FRAME_MARGIN + 225, BOARD_SIDE + OPTIONS_PANEL_HEIGHT - MOVE_LABEL_HEIGHT + 33, 100, MOVE_LABEL_HEIGHT);
-				moveCount.setBounds(FRAME_MARGIN + 7, BOARD_SIDE + OPTIONS_PANEL_HEIGHT - MOVE_LABEL_HEIGHT + 33, 141, MOVE_LABEL_HEIGHT);
+				moveCountLabel.setBounds(
+						/*X Position*/	(FRAME_MARGIN),
+						/*Y Position*/	(GAME_BOARD_SIDE_LENGTH + OPTIONS_PANEL_HEIGHT + FRAME_MARGIN),
+						/*Width*/		(GAME_BOARD_SIDE_LENGTH / 2),
+						/*Height*/		(MOVE_COUNTER_LABEL_HEIGHT)
+										);
 				
 				// This creates the options panel,sets the layout, sets the size, and then the options buttons and
 				// move count are added to it.
 				JPanel optionsPanel = new JPanel();
 				optionsPanel.setLayout(null);
-				optionsPanel.setBounds(FRAME_MARGIN, BOARD_SIDE + FRAME_MARGIN + 28, BOARD_SIDE + 28, OPTIONS_PANEL_HEIGHT + 28);
+				optionsPanel.setBounds(
+					/*X Position*/	  (FRAME_MARGIN),
+					/*Y Position*/	  (GAME_BOARD_SIDE_LENGTH + (2 * FRAME_MARGIN)),
+					/*Width*/		  (GAME_BOARD_SIDE_LENGTH + (2 * FRAME_MARGIN)), 
+					/*Height*/		  (OPTIONS_PANEL_HEIGHT)
+									  );
 				
-				optionsPanel.add(jbtOptions[0]);
-				optionsPanel.add(jbtOptions[1]);
-				optionsPanel.add(jbtOptions[2]);
-				optionsPanel.add(jbtOptions[3]);
-				optionsPanel.add(jbtOptions[4]);
-				optionsPanel.add(jbtOptions[5]);
-				optionsPanel.add(gameCount);
-				optionsPanel.add(moveCount);
+				optionsPanel.add(jbtOptionsButtonsArray[SAVE_BUTTON_NUMBER]);
+				optionsPanel.add(jbtOptionsButtonsArray[LOAD_BUTTON_NUMBER]);
+				optionsPanel.add(jbtOptionsButtonsArray[HELP_BUTTON_NUMBER]);
+				optionsPanel.add(jbtOptionsButtonsArray[HINTS_BUTTON_NUMBER]);
+				optionsPanel.add(jbtOptionsButtonsArray[EXIT_BUTTON_NUMBER]);
+				optionsPanel.add(jbtOptionsButtonsArray[NEW_GAME_BUTTON_NUMBER]);
+				optionsPanel.add(gameCountLabel);
+				optionsPanel.add(moveCountLabel);
 				
-				// The frame needs the panels to be added to it, formatted to fit the game board, located correctly on the screen, 
-				// and close when the x is clicked.
-				add(squarePanel);
+	
+				add(mainGameTilesPanel);
 				add(optionsPanel);
 				setTitle("Fifteen Square");
-				setSize(BOARD_SIDE + (2 * FRAME_MARGIN) + 26, BOARD_SIDE + (2 * FRAME_MARGIN) + OPTIONS_PANEL_HEIGHT + 65);
+				setSize(
+		/*Width*/	   (GAME_BOARD_SIDE_LENGTH + (7 * FRAME_MARGIN) + SPACE_BETWEEN_BUTTONS),
+		/*Height*/	   (GAME_BOARD_SIDE_LENGTH + (11 * FRAME_MARGIN) + OPTIONS_PANEL_HEIGHT + SPACE_BETWEEN_BUTTONS)
+					   );
 				setLocationRelativeTo(null);
 				setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				setVisible(true);
 				setLayout(null);
 				
-				visibilityToFalse(); // Makes the button with 0 on it not visible before the game starts. 
 				shuffle(); // Once the board is shuffled the game is ready to play.
 				
 	}
@@ -203,14 +259,14 @@ public class FifteenSquare extends JFrame
 	{
 		// The rows and columns are incremented and the text for each slot is searched. If that text is 0 the row and column 
 		// of the location are stored in invisibleLocation.
-		for (int boardRows = 0; boardRows < TOTAL_ROWS; boardRows++)
+		for (int boardRows = 0; boardRows < TOTAL_BOARD_ROWS; boardRows++)
 		{
-			for (int boardColumns = 0; boardColumns < TOTAL_COLUMNS; boardColumns++)
+			for (int boardColumns = 0; boardColumns < TOTAL_BOARD_COLUMNS; boardColumns++)
 			{
-				if (jbtBoardSquares[boardRows][boardColumns].getText().equals("0"))
+				if (jbtBoardButtonTilesArray[boardRows][boardColumns].getText().equals("0"))
 				{
-					invisibleLocation[0] = boardRows;		// This is the row of the invisible button.
-					invisibleLocation[1] = boardColumns;	// This is the column of the invisible button.
+					invisibleButtonLocation[0] = boardRows;		// This is the row of the invisible button.
+					invisibleButtonLocation[1] = boardColumns;	// This is the column of the invisible button.
 				}			
 			}
 		}
@@ -220,18 +276,18 @@ public class FifteenSquare extends JFrame
 	public void visibilityToFalse()
 	{
 		findInvisibleSquare(); // Gets the location of the 0 button.
-		jbtBoardSquares[invisibleLocation[0]][invisibleLocation[1]].setVisible(false); // Then sets the location to not visible.		
+		jbtBoardButtonTilesArray[invisibleButtonLocation[0]][invisibleButtonLocation[1]].setVisible(false); // Then sets the location to not visible.		
 	}
 	
 	// This method resets all the buttons to visible.
 	public void visibilityToTrue()
 	{
 		// The rows and columns are incremented and then each of the buttons are set to visible.
-		for (int boardRows = 0; boardRows < TOTAL_ROWS; boardRows++)
+		for (int boardRows = 0; boardRows < TOTAL_BOARD_ROWS; boardRows++)
 		{
-			for (int boardColumns = 0; boardColumns < TOTAL_COLUMNS; boardColumns++)
+			for (int boardColumns = 0; boardColumns < TOTAL_BOARD_COLUMNS; boardColumns++)
 			{
-				jbtBoardSquares[boardRows][boardColumns].setVisible(true);				
+				jbtBoardButtonTilesArray[boardRows][boardColumns].setVisible(true);				
 			}	
 		}
 	}
@@ -244,13 +300,13 @@ public class FifteenSquare extends JFrame
 		String randomNumber = "" + ((int) (Math.random() * 15 + 1)); 
 		
 		// The rows and columns are then incremented to find the random numbers location on the board.
-		for (int boardRows = 0; boardRows < TOTAL_ROWS; boardRows++)
+		for (int boardRows = 0; boardRows < TOTAL_BOARD_ROWS; boardRows++)
 		{
-			for (int boardColumns = 0; boardColumns < TOTAL_COLUMNS; boardColumns++)
+			for (int boardColumns = 0; boardColumns < TOTAL_BOARD_COLUMNS; boardColumns++)
 			{
 				
 				// If the random number equals the number on the button the location of that button is stored.
-				if (jbtBoardSquares[boardRows][boardColumns].getText().equals(randomNumber))
+				if (jbtBoardButtonTilesArray[boardRows][boardColumns].getText().equals(randomNumber))
 				{
 					clickLocation[0] = boardRows;		// This is the row of a random button.
 					clickLocation[1] = boardColumns;	// This is the column of a random button.
@@ -274,14 +330,14 @@ public class FifteenSquare extends JFrame
 			
 			// If the row of the clicked button is the same as the row of the 0 button the columns in that row
 			// will slide from the clicked location to the 0 location.
-			if (clickLocation[0] == invisibleLocation[0])
+			if (clickLocation[0] == invisibleButtonLocation[0])
 			{
 				slideColumn(); // This will slide the buttons toward the blank column.
 			}
 			
 			// If the column of the clicked button is the same as the column of the 0 button the rows in that column
 			// will slide from the clicked location to the 0 location.
-			else if (clickLocation[1] == invisibleLocation[1])
+			else if (clickLocation[1] == invisibleButtonLocation[1])
 			{
 				slideRow(); // This will slide the the buttons toward the blank row.
 			}
@@ -301,7 +357,7 @@ public class FifteenSquare extends JFrame
 		} catch (Exception totalGamesException)
 		{
 		}
-		gameCount.setText("Games : " + totalGames);
+		gameCountLabel.setText("Games : " + totalGames);
 	}
 		
 	// This method will slide the column and place the invisible square at the end of the slide.
@@ -312,36 +368,36 @@ public class FifteenSquare extends JFrame
 		int column;
 		
 		// When the column of the 0 is greater than the column of the clicked numbers location the if statement will execute.
-		if (invisibleLocation[1] > clickLocation[1])
+		if (invisibleButtonLocation[1] > clickLocation[1])
 		{
 			// starting from the 0 button the column is decremented.
-			for (column = invisibleLocation[1]; column >= clickLocation[1]; column--)
+			for (column = invisibleButtonLocation[1]; column >= clickLocation[1]; column--)
 			{
 				// When the column is greater than the column of the clicked buttons column the if statement will execute.
 				// This sets the text of the button to be the same as the one to the left of it until the clicked 
 				// number is reached.
 				if (column > clickLocation[1])	
-					jbtBoardSquares[invisibleLocation[0]][column].setText(jbtBoardSquares[invisibleLocation[0]][column - 1].getText());
+					jbtBoardButtonTilesArray[invisibleButtonLocation[0]][column].setText(jbtBoardButtonTilesArray[invisibleButtonLocation[0]][column - 1].getText());
 				
 				// This is the location of the clicked number. It will be set to zero and the slide will be finished.
 				else
-					jbtBoardSquares[invisibleLocation[0]][column].setText("0");
+					jbtBoardButtonTilesArray[invisibleButtonLocation[0]][column].setText("0");
 			}
 		} 
 		// If the invisible squares column is the same as the clicked column the if statement will execute. 
-		else if (invisibleLocation[1] < clickLocation[1])
+		else if (invisibleButtonLocation[1] < clickLocation[1])
 		{
-			for (column = invisibleLocation[1]; column <= clickLocation[1]; column++)
+			for (column = invisibleButtonLocation[1]; column <= clickLocation[1]; column++)
 			{
 				// When the column is less than the clicked locations column the if statement will execute.
 				// This sets the text of the button to be the same as the one to the right of it until the clicked 
 				// number is reached.
 				if (column < clickLocation[1])
-					jbtBoardSquares[invisibleLocation[0]][column].setText(jbtBoardSquares[invisibleLocation[0]][column + 1].getText());
+					jbtBoardButtonTilesArray[invisibleButtonLocation[0]][column].setText(jbtBoardButtonTilesArray[invisibleButtonLocation[0]][column + 1].getText());
 				
 				// This is the location of the clicked number. It will be set to zero and the slide will be finished.
 				else
-					jbtBoardSquares[invisibleLocation[0]][column].setText("0");
+					jbtBoardButtonTilesArray[invisibleButtonLocation[0]][column].setText("0");
 			}	
 		}
 	}
@@ -354,32 +410,32 @@ public class FifteenSquare extends JFrame
 		int row;
 		
 		// When the row of the 0 is greater than the row of the clicked location the if statement will execute.
-		if (invisibleLocation[0] > clickLocation[0])
+		if (invisibleButtonLocation[0] > clickLocation[0])
 		{
 			// starting from the 0 button the row is decremented.
-			for (row = invisibleLocation[0]; row >= clickLocation[0]; row--)
+			for (row = invisibleButtonLocation[0]; row >= clickLocation[0]; row--)
 			{
 				// When the row is greater than the row of the clicked buttons column the if statement will execute.
 				if (row > clickLocation[0])	
-					jbtBoardSquares[row][invisibleLocation[1]].setText(jbtBoardSquares[row - 1][invisibleLocation[1]].getText());
+					jbtBoardButtonTilesArray[row][invisibleButtonLocation[1]].setText(jbtBoardButtonTilesArray[row - 1][invisibleButtonLocation[1]].getText());
 				
 				// This is the location of the clicked number. It will be set to zero and the slide will be finished.
 				else
-					jbtBoardSquares[row][invisibleLocation[1]].setText("0");
+					jbtBoardButtonTilesArray[row][invisibleButtonLocation[1]].setText("0");
 			}
 		} 
 		// When the row of the 0 is less than the clicked locations row the if statement will execute.
-		else if (invisibleLocation[0] < clickLocation[0])
+		else if (invisibleButtonLocation[0] < clickLocation[0])
 		{
 			// The row is incremented and the and the button will be set to the one beneath it.
-			for (row = invisibleLocation[0]; row <= clickLocation[0]; row++)
+			for (row = invisibleButtonLocation[0]; row <= clickLocation[0]; row++)
 			{
 				if (row < clickLocation[0])
-					jbtBoardSquares[row][invisibleLocation[1]].setText(jbtBoardSquares[row + 1][invisibleLocation[1]].getText());
+					jbtBoardButtonTilesArray[row][invisibleButtonLocation[1]].setText(jbtBoardButtonTilesArray[row + 1][invisibleButtonLocation[1]].getText());
 				
 				// This is the location of the clicked number. It will be set to zero and the slide will be finished.
 				else
-					jbtBoardSquares[row][invisibleLocation[1]].setText("0");
+					jbtBoardButtonTilesArray[row][invisibleButtonLocation[1]].setText("0");
 			}	
 		}
 	}
@@ -392,11 +448,11 @@ public class FifteenSquare extends JFrame
 		public void actionPerformed(ActionEvent squareClicked)
 		{
 			// The rows and columns of the board are checked to find where the click came from.
-			for (int boardRows = 0; boardRows < TOTAL_ROWS; boardRows++)
+			for (int boardRows = 0; boardRows < TOTAL_BOARD_ROWS; boardRows++)
 			{
-				for (int boardColumns = 0; boardColumns < TOTAL_COLUMNS; boardColumns++)
+				for (int boardColumns = 0; boardColumns < TOTAL_BOARD_COLUMNS; boardColumns++)
 				{
-					if (squareClicked.getSource() == jbtBoardSquares[boardRows][boardColumns])
+					if (squareClicked.getSource() == jbtBoardButtonTilesArray[boardRows][boardColumns])
 					{
 						clickLocation[0] = boardRows;
 						clickLocation[1] = boardColumns;
@@ -409,12 +465,12 @@ public class FifteenSquare extends JFrame
 			// The next part checks to see if any square has been moved. If a move has been made the move count is incremented.
 			
 			// The move text is updated.
-			moveCount.setText("Moves : " + (numberOfMoves));
+			moveCountLabel.setText("Moves : " + (numberOfMovesCounter));
 			
 			isWinner = false;
 			
 			// When the bottom right square is invisible the victory condition is checked.
-			if (jbtBoardSquares[3][3].getText().equals("0"))
+			if (jbtBoardButtonTilesArray[3][3].getText().equals("0"))
 			isWinner = victoryCondition();
 			
 			// If the win condition has been met a message displays the you won.
@@ -432,7 +488,7 @@ public class FifteenSquare extends JFrame
 		public void actionPerformed(ActionEvent optionClicked)
 		{
 			// If the source of the click is the save button the if statement will execute.
-			if (optionClicked.getSource() == jbtOptions[0])
+			if (optionClicked.getSource() == jbtOptionsButtonsArray[0])
 			{
 				try
 				{
@@ -440,18 +496,18 @@ public class FifteenSquare extends JFrame
 					// each of the buttons will be saved.
 					DataOutputStream gameSave = new DataOutputStream(new FileOutputStream("savedGame"));
 					
-					for (int boardRows = 0; boardRows < TOTAL_ROWS; boardRows++)
+					for (int boardRows = 0; boardRows < TOTAL_BOARD_ROWS; boardRows++)
 					{
-						for (int boardColumns = 0; boardColumns < TOTAL_COLUMNS; boardColumns++)
+						for (int boardColumns = 0; boardColumns < TOTAL_BOARD_COLUMNS; boardColumns++)
 						{
-							gameSave.writeUTF(jbtBoardSquares[boardRows][boardColumns].getText());	
+							gameSave.writeUTF(jbtBoardButtonTilesArray[boardRows][boardColumns].getText());	
 						}	
 					}
 					gameSave.close();
 					
 					// Also the number of moves needs to be saved.
 					DataOutputStream savedMoves = new DataOutputStream(new FileOutputStream("savedMoves"));
-					savedMoves.writeInt(numberOfMoves);
+					savedMoves.writeInt(numberOfMovesCounter);
 					savedMoves.close();
 				} catch(IOException ioe)
 				{
@@ -459,7 +515,7 @@ public class FifteenSquare extends JFrame
 							
 			}
 			// If the source of the click is the load button the if statement will execute.
-			if (optionClicked.getSource() == jbtOptions[1])
+			if (optionClicked.getSource() == jbtOptionsButtonsArray[1])
 			{
 				try
 				{
@@ -467,11 +523,11 @@ public class FifteenSquare extends JFrame
 					// saved numbers and their locations on the buttons.
 					DataInputStream savedGame = new DataInputStream(new FileInputStream("savedGame"));
 					  
-					for (int boardRows = 0; boardRows < TOTAL_ROWS; boardRows++)
+					for (int boardRows = 0; boardRows < TOTAL_BOARD_ROWS; boardRows++)
 					{
-						for (int boardColumns = 0; boardColumns < TOTAL_COLUMNS; boardColumns++)
+						for (int boardColumns = 0; boardColumns < TOTAL_BOARD_COLUMNS; boardColumns++)
 						{
-							jbtBoardSquares[boardRows][boardColumns].setText(savedGame.readUTF());	
+							jbtBoardButtonTilesArray[boardRows][boardColumns].setText(savedGame.readUTF());	
 						}	
 					}
 					savedGame.close();
@@ -482,9 +538,9 @@ public class FifteenSquare extends JFrame
 					
 					// The moves also need to be updated to the saved number of moves.
 					DataInputStream savedMoves = new DataInputStream(new FileInputStream("savedMoves"));
-					numberOfMoves = savedMoves.readInt();
+					numberOfMovesCounter = savedMoves.readInt();
 					savedMoves.close();
-					moveCount.setText("Moves : " + (numberOfMoves));
+					moveCountLabel.setText("Moves : " + (numberOfMovesCounter));
 					
 				} catch(IOException ioe)
 				{
@@ -492,7 +548,7 @@ public class FifteenSquare extends JFrame
 				
 			}
 			// If the source of the click is the help button the if statement will execute.
-			if (optionClicked.getSource() == jbtOptions[2])
+			if (optionClicked.getSource() == jbtOptionsButtonsArray[2])
 			{
 					// The help frame and instructions are created.
 					JTextPane instructions = new JTextPane();
@@ -512,7 +568,7 @@ public class FifteenSquare extends JFrame
 				
 				// Some sizing and and basic settings are changed here.
 				help.setTitle("Help");
-				help.setSize(BOARD_SIDE * 2, BOARD_SIDE - 80);
+				help.setSize(GAME_BOARD_SIDE_LENGTH * 2, GAME_BOARD_SIDE_LENGTH - 80);
 				help.setLocationRelativeTo(null);
 				help.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 				help.setVisible(true);
@@ -521,16 +577,16 @@ public class FifteenSquare extends JFrame
 				
 			
 			// If the exit button is clicked the game will end.
-			else if (optionClicked.getSource() == jbtOptions[4])
+			else if (optionClicked.getSource() == jbtOptionsButtonsArray[4])
 			{
 				System.exit(EXIT_ON_CLOSE);
 			}
 			
 			// If the new button is clicked the board will be reshuffled and move count is reset
-			else if (optionClicked.getSource() == jbtOptions[5])
+			else if (optionClicked.getSource() == jbtOptionsButtonsArray[5])
 			{
-				numberOfMoves = 0;
-				moveCount.setText("Moves : " + (numberOfMoves/2));
+				numberOfMovesCounter = 0;
+				moveCountLabel.setText("Moves : " + (numberOfMovesCounter/2));
 				shuffle();
 			}
 		}
@@ -541,15 +597,15 @@ public class FifteenSquare extends JFrame
 	{
 		findInvisibleSquare();
 		visibilityToFalse();   // The 0 square needs to be reset to invisible.
-		if (clickLocation[0] == invisibleLocation[0])
+		if (clickLocation[0] == invisibleButtonLocation[0])
 		{
 			slideColumn(); // This will slide the buttons toward the blank column.
-			numberOfMoves++;
+			numberOfMovesCounter++;
 		}
-		else if (clickLocation[1] == invisibleLocation[1])
+		else if (clickLocation[1] == invisibleButtonLocation[1])
 		{
 			slideRow(); // This will slide the the buttons toward the blank row.
-			numberOfMoves++;
+			numberOfMovesCounter++;
 		}
 		// The buttons need to be reset to visible so that button is not left not visible.
 		visibilityToTrue();
@@ -565,11 +621,11 @@ public class FifteenSquare extends JFrame
 		// returned to the action move listener class.
 		int correctCount = 0;
 		
-		for (int boardRows = 0; boardRows < TOTAL_ROWS; boardRows++)
+		for (int boardRows = 0; boardRows < TOTAL_BOARD_ROWS; boardRows++)
 		{
-			for (int boardColumns = 0; boardColumns < TOTAL_COLUMNS; boardColumns++)
+			for (int boardColumns = 0; boardColumns < TOTAL_BOARD_COLUMNS; boardColumns++)
 			{
-				if (jbtBoardSquares[boardRows][boardColumns].getText().equals((boardRows * 4) + boardColumns + 1 + ""))
+				if (jbtBoardButtonTilesArray[boardRows][boardColumns].getText().equals((boardRows * 4) + boardColumns + 1 + ""))
 				{
 					correctCount++;
 				}
